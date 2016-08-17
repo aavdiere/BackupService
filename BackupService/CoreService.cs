@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Configuration;
 using System.ServiceProcess;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BackupService {
     public partial class CoreService : ServiceBase {
+        private Configuration _config;
+
         public CoreService() {
             InitializeComponent();
+
+            config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
         }
 
 #if DEBUG
@@ -22,6 +19,8 @@ namespace BackupService {
 #endif
 
         protected override void OnStart(string[] args) {
+            var t = _config.GetSectionGroup("folderGroup");
+
         }
 
         protected override void OnStop() {

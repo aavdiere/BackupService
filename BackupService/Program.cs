@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.ServiceProcess;
 using System.Text;
@@ -12,6 +13,7 @@ namespace BackupService {
         /// </summary>
         static void Main() {
 #if DEBUG
+            System.Threading.Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-us");
             CoreService service = new CoreService();
             service.DebugStart();
             System.Threading.Thread.Sleep(System.Threading.Timeout.Infinite);

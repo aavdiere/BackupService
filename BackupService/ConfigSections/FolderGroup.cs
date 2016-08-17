@@ -2,10 +2,6 @@
 using System.Configuration;
 
 namespace BackupService.ConfigSections {
-    public class FolderGroup : ConfigurationSectionGroup {
-
-    }
-
     #region Sections
 
     public class General : ConfigurationSection {
@@ -29,6 +25,20 @@ namespace BackupService.ConfigSections {
         [ConfigurationProperty("interval")]
         public Interval Interval {
             get { return (Interval)this["lastBackup"]; }
+        }
+    }
+
+    public class BackupFolders : ConfigurationSection {
+        /// <summary>
+        /// The name of this section in the App.config
+        /// </summary>
+        public const string SectionName = "backupFolders";
+
+        private BackupFolders() { }
+
+        [ConfigurationProperty("folders")]
+        public FoldersCollection Folders {
+            get { return (FoldersCollection)base["folders"]; }
         }
     }
 
@@ -97,6 +107,7 @@ namespace BackupService.ConfigSections {
 
     #region Folders
 
+    [ConfigurationCollection(typeof(FolderElement))]
     public class FoldersCollection : ConfigurationElementCollection {
         private FoldersCollection() { }
 
