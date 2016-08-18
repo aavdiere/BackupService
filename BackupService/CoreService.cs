@@ -1,5 +1,8 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 using System.ServiceProcess;
+
+using BackupService.ConfigSections;
 
 namespace BackupService {
     public partial class CoreService : ServiceBase {
@@ -7,8 +10,6 @@ namespace BackupService {
 
         public CoreService() {
             InitializeComponent();
-
-            config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
         }
 
 #if DEBUG
@@ -19,8 +20,21 @@ namespace BackupService {
 #endif
 
         protected override void OnStart(string[] args) {
-            var t = _config.GetSectionGroup("folderGroup");
+            try {
+                _config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
+                var s = (ServiceData)_config.GetSection("serviceData");
+                var t = s.BackupConfigurations;
+                foreach (var u in t) {
+                    var v = u.Folders;
+                    foreach (var w in v) {
+                        System.Console.WriteLine(String.Format("{0}{1}", u.General.BasePath.Path, w.Path));
+                    }
+                }
+            } catch (System.Exception ex) {
+                System.Console.WriteLine(ex.Message);
+                System.Console.WriteLine(ex.StackTrace);
+            }
         }
 
         protected override void OnStop() {

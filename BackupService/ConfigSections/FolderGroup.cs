@@ -1,54 +1,233 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Configuration;
 
 namespace BackupService.ConfigSections {
-    #region Sections
+    public class ServiceData : ConfigurationSection {
+        /// <summary>
+        /// The name of this section in the App.config
+        /// </summary>
+        public const string SectionName = "serviceData";
 
-    public class General : ConfigurationSection {
+        private ServiceData() { }
+
+        [ConfigurationProperty("backupConfigurations")]
+        [ConfigurationCollection(typeof(BackupConfiguration), AddItemName = "backupConfiguration")]
+        public BackupConfigurations BackupConfigurations {
+            get { return (BackupConfigurations)this["backupConfigurations"]; }
+            set { this["backupConfigurations"] = value; }
+        }
+    }
+
+    #region ServiceData
+
+    [ConfigurationCollection(typeof(BackupConfiguration))]
+    public class BackupConfigurations : ConfigurationElementCollection, IList<BackupConfiguration>, ICollection<BackupConfiguration>, IEnumerable<BackupConfiguration> {
+        /// <summary>
+        /// The name of this collection in the App.config
+        /// </summary>
+        public const string CollectionName = "backupConfigurations";
+
+        internal const string PropertyName = "backupConfiguration";
+
+        protected override string ElementName {
+            get {
+                return PropertyName;
+            }
+        }
+
+        protected override bool IsElementName(string elementName) {
+            return elementName.Equals(PropertyName, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        public override bool IsReadOnly() {
+            return false;
+        }
+
+        protected override ConfigurationElement CreateNewElement() {
+            return new BackupConfiguration();
+        }
+
+        protected override object GetElementKey(ConfigurationElement element) {
+            return ((BackupConfiguration)element).General.BasePath;
+        }
+
+        public new BackupConfigurationEnumerator GetEnumerator() {
+            return new BackupConfigurationEnumerator(this);
+        }
+
+        IEnumerator<BackupConfiguration> IEnumerable<BackupConfiguration>.GetEnumerator() {
+            return GetEnumerator();
+        }
+
+        bool ICollection<BackupConfiguration>.IsReadOnly {
+            get {
+                return false;
+            }
+        }
+
+        public BackupConfiguration this[int index] {
+            get {
+                BackupConfiguration result = (BackupConfiguration)BaseGet(index);
+                if (result == null)
+                    throw new IndexOutOfRangeException();
+                return result;
+            }
+
+            set {
+                BaseRemoveAt(index);
+                BaseAdd(index, value);
+            }
+        }
+
+        BackupConfiguration IList<BackupConfiguration>.this[int index] {
+            get {
+                return (BackupConfiguration)BaseGet(index);
+            }
+
+            set {
+                BaseRemoveAt(index);
+                BaseAdd(index, value);
+            }
+        }
+
+        public int IndexOf(BackupConfiguration item) {
+            return BaseIndexOf(item);
+        }
+
+        public void Insert(int index, BackupConfiguration item) {
+            if (index < 0 || index > Count)
+                throw new ArgumentOutOfRangeException();
+            BaseRemoveAt(index);
+            BaseAdd(index, item);
+        }
+
+        public void RemoveAt(int index) {
+            BaseRemoveAt(index);
+        }
+
+        public void Add(BackupConfiguration item) {
+            BaseAdd(item, false);
+        }
+
+        public void Clear() {
+            BaseClear();
+        }
+
+        public bool Contains(BackupConfiguration item) {
+            return BaseIndexOf(item) >= 0;
+        }
+
+        public void CopyTo(BackupConfiguration[] array, int arrayIndex) {
+            if (array == null)
+                throw new ArgumentNullException();
+            if (arrayIndex < 0)
+                throw new ArgumentOutOfRangeException();
+            if (array.Length < Count - arrayIndex)
+                throw new ArgumentException();
+
+            for (int i = arrayIndex; i < Count; i++) {
+                array[i - arrayIndex] = (BackupConfiguration)BaseGet(arrayIndex);
+            }
+        }
+
+        public bool Remove(BackupConfiguration item) {
+            BaseRemove(item);
+            return true;
+        }
+
+        public class BackupConfigurationEnumerator : IEnumerator<BackupConfiguration> {
+            int _position = -1;
+            BackupConfigurations _BackupConfigurations;
+
+            public BackupConfigurationEnumerator(BackupConfigurations BackupConfigurations) {
+                _BackupConfigurations = BackupConfigurations;
+            }
+
+            public BackupConfiguration Current {
+                get {
+                    try {
+                        return _BackupConfigurations[_position];
+                    } catch (IndexOutOfRangeException ex) {
+                        throw new InvalidOperationException("Invalid operation.", ex);
+                    }
+                }
+            }
+
+            object IEnumerator.Current {
+                get {
+                    return Current;
+                }
+            }
+
+            public void Dispose() { }
+
+            public bool MoveNext() {
+                _position++;
+                return (_position < _BackupConfigurations.Count);
+            }
+
+            public void Reset() {
+                _position = -1;
+            }
+        }
+    }
+
+    public class BackupConfiguration : ConfigurationElement {
+        /// <summary>
+        /// The name of this element in the App.config
+        /// </summary>
+        public const string ElementName = "backupConfiguration";
+
+        public BackupConfiguration() { }
+
+        [ConfigurationProperty("general")]
+        public General General {
+            get { return (General)this["general"]; }
+            set { this["general"] = value; }
+        }
+
+        [ConfigurationProperty("folders")]
+        [ConfigurationCollection(typeof(Folder), AddItemName = "folder")]
+        public Folders Folders {
+            get { return (Folders)this["folders"]; }
+            set { this["folders"] = value; }
+        }
+    }
+
+    #region General
+
+    public class General : ConfigurationElement {
         /// <summary>
         /// The name of this section in the App.config
         /// </summary>
         public const string SectionName = "general";
-        
+
         private General() { }
 
-        [ConfigurationProperty("basePath")]
+        [ConfigurationProperty("basePath", IsRequired = true, IsKey = true)]
         public BasePath BasePath {
             get { return (BasePath)this["basePath"]; }
+            set { this["basePath"] = value; }
         }
 
-        [ConfigurationProperty("lastBackup")]
+        [ConfigurationProperty("lastBackup", IsRequired = true)]
         public LastBackup LastBackup {
             get { return (LastBackup)this["lastBackup"]; }
+            set { this["lastBackup"] = value; }
         }
 
-        [ConfigurationProperty("interval")]
+        [ConfigurationProperty("interval", IsRequired = true)]
         public Interval Interval {
-            get { return (Interval)this["lastBackup"]; }
+            get { return (Interval)this["interval"]; }
+            set { this["interval"] = value; }
         }
     }
-
-    public class BackupFolders : ConfigurationSection {
-        /// <summary>
-        /// The name of this section in the App.config
-        /// </summary>
-        public const string SectionName = "backupFolders";
-
-        private BackupFolders() { }
-
-        [ConfigurationProperty("folders")]
-        public FoldersCollection Folders {
-            get { return (FoldersCollection)base["folders"]; }
-        }
-    }
-
-    #endregion
-
-    #region General
 
     public class BasePath : ConfigurationElement {
         /// <summary>
-        /// The name of this section in the App.config
+        /// The name of this element in the App.config
         /// </summary>
         public const string ElementName = "basePath";
 
@@ -107,68 +286,19 @@ namespace BackupService.ConfigSections {
 
     #region Folders
 
-    [ConfigurationCollection(typeof(FolderElement))]
-    public class FoldersCollection : ConfigurationElementCollection {
-        private FoldersCollection() { }
+    public class Folder : ConfigurationElement {
+        /// <summary>
+        /// The name of this element in the App.config
+        /// </summary>
+        public const string ElementName = "folder";
 
-        protected override ConfigurationElement CreateNewElement() {
-            return new FolderElement();
-        }
+        public Folder() { }
 
-        protected override object GetElementKey(ConfigurationElement element) {
-            return ((FolderElement)element).Path;
+        [ConfigurationProperty("name", IsRequired = false)]
+        public string Name {
+            get { return (string)this["name"]; }
+            set { this["name"] = value; }
         }
-
-        public FolderElement this[int index] {
-            get { return (FolderElement)BaseGet(index); }
-            set {
-                if (BaseGet(index) != null) BaseRemoveAt(index);
-                BaseAdd(index, value);
-            }
-        }
-
-        /*new public FolderElement this[string name] {
-            get { return (FolderElement)BaseGet(name); }
-        }
-
-        public int IndexOf(FolderElement folder) {
-            return BaseIndexOf(folder);
-        }
-        
-        public void Add(FolderElement folder) {
-            BaseAdd(folder);
-        }
-
-        protected override void BaseAdd(ConfigurationElement element) {
-            BaseAdd(element, false);
-        }
-
-        public void Remove(FolderElement folder) {
-            if (BaseIndexOf(folder) >= 0) {
-                BaseRemove(folder.Name);
-            }
-        }
-
-        public void RemoveAt(int index) {
-            BaseRemoveAt(index);
-        }
-
-        public void Remove(string name) {
-            BaseRemove(name);
-        }
-
-        public void Clear() {
-            BaseClear();
-        }
-        */
-    }
-
-    public class FolderElement : ConfigurationElement {
-        public FolderElement(string path) {
-            Path = path;
-        }
-
-        public FolderElement() { }
 
         [ConfigurationProperty("path", IsRequired = true, IsKey = true)]
         public string Path {
@@ -176,6 +306,150 @@ namespace BackupService.ConfigSections {
             set { this["path"] = value; }
         }
     }
+
+    [ConfigurationCollection(typeof(Folder))]
+    public class Folders : ConfigurationElementCollection, IList<Folder>, ICollection<Folder>, IEnumerable<Folder> {
+        /// <summary>
+        /// The name of this collection in the App.config
+        /// </summary>
+        public const string CollectionName = "folders";
+
+        private Folders() { }
+
+        public override bool IsReadOnly() {
+            return false;
+        }
+
+        protected override ConfigurationElement CreateNewElement() {
+            return new Folder();
+        }
+
+        protected override object GetElementKey(ConfigurationElement element) {
+            return ((Folder)element).Path;
+        }
+
+        public new FolderEnumerator GetEnumerator() {
+            return new FolderEnumerator(this);
+        }
+
+        IEnumerator<Folder> IEnumerable<Folder>.GetEnumerator() {
+            return GetEnumerator();
+        }
+
+        bool ICollection<Folder>.IsReadOnly {
+            get {
+                return false;
+            }
+        }
+
+        public Folder this[int index] {
+            get {
+                Folder result = (Folder)BaseGet(index);
+                if (result == null)
+                    throw new IndexOutOfRangeException();
+                return result;
+            }
+
+            set {
+                BaseRemoveAt(index);
+                BaseAdd(index, value);
+            }
+        }
+
+        Folder IList<Folder>.this[int index] {
+            get {
+                return (Folder)BaseGet(index);
+            }
+
+            set {
+                BaseRemoveAt(index);
+                BaseAdd(index, value);
+            }
+        }
+
+        public int IndexOf(Folder item) {
+            return BaseIndexOf(item);
+        }
+
+        public void Insert(int index, Folder item) {
+            if (index < 0 || index > Count)
+                throw new ArgumentOutOfRangeException();
+            BaseRemoveAt(index);
+            BaseAdd(index, item);
+        }
+
+        public void RemoveAt(int index) {
+            BaseRemoveAt(index);
+        }
+
+        public void Add(Folder item) {
+            BaseAdd(item, false);
+        }
+
+        public void Clear() {
+            BaseClear();
+        }
+
+        public bool Contains(Folder item) {
+            return BaseIndexOf(item) >= 0;
+        }
+
+        public void CopyTo(Folder[] array, int arrayIndex) {
+            if (array == null)
+                throw new ArgumentNullException();
+            if (arrayIndex < 0)
+                throw new ArgumentOutOfRangeException();
+            if (array.Length < Count - arrayIndex)
+                throw new ArgumentException();
+
+            for (int i = arrayIndex; i < Count; i++) {
+                array[i - arrayIndex] = (Folder)BaseGet(arrayIndex);
+            }
+        }
+
+        public bool Remove(Folder item) {
+            BaseRemove(item);
+            return true;
+        }
+
+        public class FolderEnumerator : IEnumerator<Folder> {
+            int _position = -1;
+            Folders _folders;
+
+            public FolderEnumerator(Folders folders) {
+                _folders = folders;
+            }
+
+            public Folder Current {
+                get {
+                    try {
+                        return _folders[_position];
+                    } catch (IndexOutOfRangeException ex) {
+                        throw new InvalidOperationException("Invalid operation.", ex);
+                    }
+                }
+            }
+
+            object IEnumerator.Current {
+                get {
+                    return Current;
+                }
+            }
+
+            public void Dispose() { }
+
+            public bool MoveNext() {
+                _position++;
+                return (_position < _folders.Count);
+            }
+
+            public void Reset() {
+                _position = -1;
+            }
+        }
+    }
+
+    #endregion
 
     #endregion
 }
