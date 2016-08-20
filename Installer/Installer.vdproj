@@ -15,6 +15,12 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_00D20CAA7EA34F95A4A7F085436DAFD5"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_5EF230A879A990313C38FD22CB1F53B3"
         "OwnerKey" = "8:_93BECA82AF684FA2A2A364BD62E81211"
         "MsmSig" = "8:_UNDEFINED"
@@ -80,6 +86,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.5"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.5 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.5"
+                    }
+                }
             }
         }
         "Release"
@@ -170,6 +184,26 @@
         }
         "File"
         {
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_00D20CAA7EA34F95A4A7F085436DAFD5"
+            {
+            "SourcePath" = "8:..\\BackupService\\User.config"
+            "TargetName" = "8:User.config"
+            "Tag" = "8:"
+            "Folder" = "8:_ADFADD8C38CA4BB88769C204F5F5F1AE"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_5EF230A879A990313C38FD22CB1F53B3"
             {
             "AssemblyRegister" = "3:1"
@@ -289,7 +323,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Backup Service"
         "ProductCode" = "8:{041390D5-74E2-4C03-88CE-25692E069EAE}"
-        "PackageCode" = "8:{AB95D5CA-4DA4-4C19-8F33-E9B953527F40}"
+        "PackageCode" = "8:{2E71B560-EE01-4EBA-BAE0-402D38AAC807}"
         "UpgradeCode" = "8:{75D1786D-327A-4132-B6F9-980635912ADF}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
