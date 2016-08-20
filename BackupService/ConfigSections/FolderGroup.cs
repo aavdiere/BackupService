@@ -50,7 +50,7 @@ namespace BackupService.ConfigSections {
         }
 
         protected override object GetElementKey(ConfigurationElement element) {
-            return ((BackupConfiguration)element).General.BasePath;
+            return ((BackupConfiguration)element).General.Identifier.Name;
         }
 
         public new BackupConfigurationEnumerator GetEnumerator() {
@@ -182,6 +182,11 @@ namespace BackupService.ConfigSections {
 
         public BackupConfiguration() { }
 
+        public string Identifier {
+            get { return General.Identifier.Name; }
+            set { General.Identifier.Name = value; }
+        }
+
         [ConfigurationProperty("general")]
         public General General {
             get { return (General)this["general"]; }
@@ -204,9 +209,15 @@ namespace BackupService.ConfigSections {
         /// </summary>
         public const string SectionName = "general";
 
-        private General() { }
+        public General() { }
 
-        [ConfigurationProperty("basePath", IsRequired = true, IsKey = true)]
+        [ConfigurationProperty("identifier", IsRequired = true, IsKey = true)]
+        public Identifier Identifier {
+            get { return (Identifier)this["identifier"]; }
+            set { this["identifier"] = value; }
+        }
+
+        [ConfigurationProperty("basePath", IsRequired = true)]
         public BasePath BasePath {
             get { return (BasePath)this["basePath"]; }
             set { this["basePath"] = value; }
@@ -225,13 +236,28 @@ namespace BackupService.ConfigSections {
         }
     }
 
+    public class Identifier : ConfigurationElement {
+        /// <summary>
+        /// The name of this element in the App.config
+        /// </summary>
+        public const string ElementName = "identifier";
+
+        private Identifier() { }
+
+        [ConfigurationProperty("name", IsRequired = true)]
+        public string Name {
+            get { return (string)this["name"]; }
+            set { this["name"] = value; }
+        }
+    }
+
     public class BasePath : ConfigurationElement {
         /// <summary>
         /// The name of this element in the App.config
         /// </summary>
         public const string ElementName = "basePath";
 
-        private BasePath() { }
+        public BasePath() { }
 
         [ConfigurationProperty("path", IsRequired = true)]
         public string Path {
@@ -300,7 +326,7 @@ namespace BackupService.ConfigSections {
             set { this["name"] = value; }
         }
 
-        [ConfigurationProperty("path", IsRequired = true, IsKey = true)]
+        [ConfigurationProperty("path", IsRequired = true)]
         public string Path {
             get { return (string)this["path"]; }
             set { this["path"] = value; }
@@ -325,7 +351,8 @@ namespace BackupService.ConfigSections {
         }
 
         protected override object GetElementKey(ConfigurationElement element) {
-            return ((Folder)element).Path;
+            Folder f = (Folder)element;
+            return f.Path + f.Name;
         }
 
         public new FolderEnumerator GetEnumerator() {

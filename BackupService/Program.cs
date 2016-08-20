@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.ServiceProcess;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
+#if DEBUG
+    using System.Threading;
+#else
+    using System.ServiceProcess;
+#endif
 
 namespace BackupService {
     static class Program {
@@ -12,11 +11,12 @@ namespace BackupService {
         /// The main entry point for the application.
         /// </summary>
         static void Main() {
+            CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo("en-US");
 #if DEBUG
-            System.Threading.Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-us");
             CoreService service = new CoreService();
             service.DebugStart();
-            System.Threading.Thread.Sleep(System.Threading.Timeout.Infinite);
+            Thread.Sleep(5 * 1000);
+            service.DebugStop();
 #else
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[]

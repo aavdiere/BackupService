@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("BackupService")]
 [assembly: AssemblyDescription("A simple Windows service to periodically backup folders")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Achim Vandierendonck")]
+[assembly: AssemblyCompany("BackupService")]
 [assembly: AssemblyProduct("BackupService")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
