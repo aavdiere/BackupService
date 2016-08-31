@@ -12,9 +12,12 @@ namespace BackupService {
     public partial class CoreService : ServiceBase {
         public readonly string ThreadName = "Main thread";
 
-        private Configuration _config;
-        private ServiceData _data;
+        private static Configuration _config;
+        private static ServiceData _data;
         private List<Thread> _threadHandler;
+
+        public static Configuration Config { get { return _config; } }
+        public static ServiceData Data { get { return _data; } }
 
         public CoreService() {
             InitializeComponent();
